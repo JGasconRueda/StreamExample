@@ -1,6 +1,7 @@
 package com.example.java;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.*;
 
 public class Main {
@@ -60,6 +61,8 @@ public class Main {
         // Stream Métodos intermedios
         // ==========================
 
+        // Operadores que procesan los datos de un Stream y devuelven un nuevo Stream como respuesta
+
         Persona p1 = new Persona("Pepe", "Perez", "Ramirez", 20);
         Persona p2 = new Persona("Juan", "Dominguez", "Gutierrez", 15);
         Persona p3 = new Persona("Antonio", "Bermudez", "Sanchez", 36);
@@ -70,9 +73,15 @@ public class Main {
         List<Persona> listaPersonas = new ArrayList<Persona>();
         listaPersonas.add(p1);
         listaPersonas.add(p2);
+        listaPersonas.add(p2);
         listaPersonas.add(p3);
         listaPersonas.add(p4);
+        listaPersonas.add(p4);
+        listaPersonas.add(p4);
         listaPersonas.add(p5);
+        listaPersonas.add(p5);
+        listaPersonas.add(p6);
+        listaPersonas.add(p6);
 
         // Distinct
         // Devuelve los elementos diferentes de una lista basado en el metodo equal() del objeto
@@ -143,7 +152,61 @@ public class Main {
         // Stream métodos Finales
         // ======================
 
+        // El Stream pipeline debe terminar con un método final.
+        // La salida de un método final puede ser:
+        //  - Un valor primitivo (long o boolean)
+        //  - Un tipo de objetos Optional (Optional<List<Object>>)
+        //  - Sin respuesta (void)
+
         // Collect
+        // Combina el resultado de los elementos procesados en una colección y aplica la lógica a los
+        // datos de salida (como la concatenación de cadenas).
+        // Stream API proporciona la funcionalidad de recopilación con la libreria Collectoras.
+        // Al usar esta libreria, puede recopilar elementos de transmisión en una list, set, or map.
+        // List
+        List<Persona> mayoresEdadCollectList = listaPersonas.stream().filter(p->p.getEdad() >= 18)
+                                                                .collect(Collectors.toList());
+        System.out.println("Mayores de Edad con collect toList "+mayoresEdadCollectList);
+
+        // ArrayList
+        ArrayList<Persona> mayoresEdadCollectAList = listaPersonas.stream().filter(p->p.getEdad() >= 18)
+                                                                .collect(Collectors.toCollection(ArrayList::new));
+        // LinkedList
+        LinkedList<Persona> mayoresEdadCollectLList = listaPersonas.stream().filter(p->p.getEdad() >= 18)
+                .collect(Collectors.toCollection(LinkedList::new));
+
+        // Con Java 10 se pueden usar unmodifiable list
+        List<Persona> mayoresEdadUnmodifiable = listaPersonas.stream().filter(p->p.getEdad() >= 18)
+                                                                .collect(Collectors.toUnmodifiableList());
+        System.out.println("Mayores de Edad con collect unmodifiable list "+mayoresEdadCollectList);
+
+        // Set
+        Set<Persona> mayoresEdadCollectSet = listaPersonas.stream().filter(p->p.getEdad() >= 18)
+                                                .collect(Collectors.toSet());
+        System.out.println("Mayores de Edad con collect "+mayoresEdadCollectSet);
+
+        // HashSet
+        HashSet<Persona> mayoresEdadCollectHSet = listaPersonas.stream().filter(p->p.getEdad() >= 18)
+                                                .collect(Collectors.toCollection(HashSet::new));
+
+        // Map (no puede contener duplicados, hay q decidir que hacer en ese caso)
+        Map<Persona,Integer> personasAparicionesMap = listaPersonas.stream()
+                                        .collect(Collectors.toMap(Function.identity(),persona->1, (a1, a2)->a1=a1+1));
+                                                            // toMap(clave, valor, que hacer en caso de conflicto)
+                                            // Function.identity() sirve para usar el elemento del Stream como clave
+        // HashMap
+        HashMap<Persona,Integer> personasAparicionesHMap = listaPersonas.stream()
+                .collect(Collectors.toMap(Function.identity(),persona->1, (a1, a2)->a1=a1+1,HashMap::new));
+                                    //toMap(clave, valor, que hacer en caso de conflicto,mapFactory)
+
+        // Joining
+        String personas = listaPersonas.stream().map(p->p.getNombre()+" "+p.getApellido1()+" "+p.getApellido2())
+                                                .collect(Collectors.joining(","));
+        System.out.println(personas);
+
+        // Reducing
+        Integer suma = listaPersonas.stream().map(p->p.getEdad()).collect(Collectors.reducing(Integer::sum)).get();
+        System.out.println("Suma de edades "+suma);
 
         // Count
 
